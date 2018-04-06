@@ -4,36 +4,28 @@ import scrapy
 from scrapy.crawler import CrawlerRunner
 from scrapy.utils.log import configure_logging
 from scrapy.linkextractors import LinkExtractor
-
+import base64
 from scrapy_splash import SplashRequest
 
 
 class TFG(scrapy.Spider):
-    name = "quotes"
-    allowed_domains = ["toscrape.com"]
-    start_urls = ['http://quotes.toscrape.com/']
+    name = 'extract'
 
-    # http_user = 'splash-user'
-    # http_pass = 'splash-password'
+    def start_requests(self):
+        url = 'https://stackoverflow.com/'
+        splash_args = {
+            'html': 1,
+            'png': 1
+        }
+        yield SplashRequest(url, self.parse_result, endpoint='render.json', args=splash_args)
 
-    def parse(self, response):
-        le = LinkExtractor()
-        for link in le.extract_links(response):
-            yield SplashRequest(
-                link.url,
-                self.parse_link,
-                endpoint='render.json',
-                args={
-                    'har': 1,
-                    'html': 1,
-                }
-            )
-
-    def parse_link(self, response):
-        print("PARSED", response.real_url, response.url)
-        print(response.css("title").extract())
-        print(response.data["har"]["log"]["pages"])
-        print(response.headers.get('Content-Type'))
+    def parse_result(self, response):
+        hxs = scrapy.Selector(response)
+        for sel in hxs.xpath("//div[@id='job_listings']/a"):
+            imgdata = base64.b64decode(response.data['png'])
+            filename = 'some_image.png'
+            with open(filename, 'wb') as f:
+                f.write(imgdata)
 
 
 
