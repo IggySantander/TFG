@@ -7,7 +7,7 @@ from scrapy_splash import SplashRequest
 
 class HomeSpider(scrapy.Spider):
     name = 'TFG'
-    allowed_domains = ['us.dev.cloud.im']
+    allowed_domains = ['ingrammicrocloud.es']
     start_urls = 'http://www.ingrammicrocloud.es/'
     script = """
             function pad(r, pad)
@@ -17,7 +17,12 @@ class HomeSpider(scrapy.Spider):
                 assert(splash:go(splash.args.url))
                 assert(splash:wait(0.5))
                 element=splash:select('.nav2 > li:nth-child(5)')
-                assert(element:mouse_click{y=-1})
+                assert(element:mouse_click{})
+                assert(splash:wait(3))
+                caja=splash:select('#searchform')
+                caja:send_text('amazon')
+                assert(caja:mouse_click())
+                caja:submit()
                 assert(splash:wait(3))
                 splash:set_viewport_full()
                 return splash:png{}
