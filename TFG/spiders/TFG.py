@@ -16,7 +16,7 @@ class HomeSpider(scrapy.Spider):
             function main(splash)
                 assert(splash:go(splash.args.url))
                 assert(splash:wait(0.5))
-                element=splash:select('.nav2 > li:nth-child(5)')
+                element=splash:select('a[href*="blog"]')
                 assert(element:mouse_click{})
                 assert(splash:wait(3))
                 caja=splash:select('#searchform')
@@ -33,7 +33,7 @@ class HomeSpider(scrapy.Spider):
             url=HomeSpider.start_urls,
             callback=self.parse,
             endpoint='execute',
-            args={'lua_source': self.script}
+            args={'lua_source': self.script, 'timeout': 3600}
         )
 
 
