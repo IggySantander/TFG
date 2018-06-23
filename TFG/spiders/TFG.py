@@ -25,7 +25,10 @@ class HomeSpider(scrapy.Spider):
                 caja:submit()
                 assert(splash:wait(3))
                 splash:set_viewport_full()
-                return splash:png{}
+                return {
+                splash:png{},
+                url = splash:url(),
+                }
             end
             """
     def start_requests(self):
@@ -33,7 +36,7 @@ class HomeSpider(scrapy.Spider):
             url=HomeSpider.start_urls,
             callback=self.parse,
             endpoint='execute',
-            args={'lua_source': self.script, 'timeout': 3600}
+            args={'lua_source': self.script},
         )
 
 
@@ -44,5 +47,6 @@ class HomeSpider(scrapy.Spider):
         png_bytes = response.body
         with open('somefile.png', 'wb') as the_file:
             the_file.write(png_bytes)
-
+        url = response.url
+        print url
 
