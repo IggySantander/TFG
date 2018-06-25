@@ -15,30 +15,25 @@ class HomeSpider(scrapy.Spider):
             end
             function main(splash)
                 assert(splash:go(splash.args.url))
-                assert(splash:wait(0.5))
-                return {
-                    splash:png{},
-                    url = splash:url(),
-                }
+                assert(splash:wait(1))
+                splash:set_viewport_full()
+                return splash:png{}
             end
             """
     script1 = """
             function main(splash)
                 assert(splash:go(splash.args.url))
-                assert(splash:wait(1))
+                assert(splash:wait(0.5))
                 element=splash:select('a[href*="blog"]')
                 assert(element:mouse_click{})
-                assert(splash:wait(3))
+                assert(splash:wait(2))
                 caja=splash:select('#searchform')
                 caja:send_text('amazon')
                 assert(caja:mouse_click())
                 caja:submit()
-                assert(splash:wait(2))
+                assert(splash:wait(1))
                 splash:set_viewport_full()
-                return {
-                splash:png{},
-                url = splash:url(),
-                }
+                return splash:png{}
             end
     
     """
@@ -56,13 +51,12 @@ class HomeSpider(scrapy.Spider):
     def parse(self, response):
         # full decoded JSON data is available as response.data:
         imgstring = response.body
-        imgdata = base64.b64decode(imgstring)
         url = response.url
         print "processing: " + url
-        with open("somefile2.png", 'wb') as f:
-            f.write(imgdata)
-        url = response.url
-        print url
+        Image= "LandingPage Screenshot.png"
+        with open(Image, 'wb') as f:
+            f.write(imgstring)
+        print Image + " has been saved"
         yield SplashRequest(
             url=response.url,
             callback=self.parse2,
@@ -72,8 +66,10 @@ class HomeSpider(scrapy.Spider):
 
     def parse2(self,response):
         png_bytes2 = response.body
-        imgdata2 = base64.b64decode(png_bytes2)
         url = response.url
         print "processing: " + url
-        with open("somefile2.png", 'wb') as f:
-            f.write(imgdata2)
+        Image = "Blog Screenshot.png"
+        with open(Image, 'wb') as f:
+            f.write(png_bytes2)
+        print Image + " has been saved"
+
