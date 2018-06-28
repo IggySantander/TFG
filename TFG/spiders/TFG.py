@@ -33,10 +33,25 @@ class HomeSpider(scrapy.Spider):
                 caja:submit()
                 assert(splash:wait(1))
                 splash:set_viewport_full()
-                return splash:png{}
+                return {
+                png=splash:png{},
+                url=splash:url(),
+                }
             end
     
     """
+
+    script2 = """
+                function main(splash)
+                    assert(splash:go(splash.args.url))
+                    assert(splash:wait(1.5))
+                    element2=splash:select('a[href*="http://www.ingrammicrocloud.es/2014/05/30/what-does-amazons-bitcoin-move-mean-for-b2b-cloud-sales/"]')
+                    assert(element2:mouse_click())
+                    assert(splash:wait(2))
+                    splash:set_viewport_full()
+                    return splash:png{}
+                end
+           """
     def start_requests(self):
         yield SplashRequest(
             url=HomeSpider.start_urls,
@@ -72,4 +87,18 @@ class HomeSpider(scrapy.Spider):
         with open(Image, 'wb') as f:
             f.write(png_bytes2)
         print Image + " has been saved"
+        yield SplashRequest(
+            url=response.url,
+            callback=self.parse3,
+            endpoint='execute',
+            args={'lua_source': self.script2},
+        )
 
+    def parse3(self,response):
+        png_bytes2 = response.body
+        url = response.url
+        print "processing: " + url
+        Image = "Post Screenshot.png"
+        with open(Image, 'wb') as f:
+            f.write(png_bytes2)
+        print Image + " has been saved"
