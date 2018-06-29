@@ -31,7 +31,7 @@ class HomeSpider(scrapy.Spider):
                 caja:send_text('amazon')
                 assert(caja:mouse_click())
                 caja:submit()
-                assert(splash:wait(1))
+                assert(splash:wait(2))
                 splash:set_viewport_full()
                 return {
                 png=splash:png{},
@@ -45,7 +45,7 @@ class HomeSpider(scrapy.Spider):
                 function main(splash)
                     assert(splash:go(splash.args.url))
                     assert(splash:wait(1.5))
-                    element2=splash:select('a[href*="http://www.ingrammicrocloud.es/2014/05/30/what-does-amazons-bitcoin-move-mean-for-b2b-cloud-sales/"]')
+                    element2= assert(splash:select('a[href*="www.ingrammicrocloud.es/2014/05/30/what-does-amazons-bitcoin-move-mean-for-b2b-cloud-sales"]'))
                     assert(element2:mouse_click())
                     assert(splash:wait(2))
                     splash:set_viewport_full()
