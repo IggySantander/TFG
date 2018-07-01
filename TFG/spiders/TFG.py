@@ -31,7 +31,7 @@ class HomeSpider(scrapy.Spider):
                 caja:send_text('amazon')
                 assert(caja:mouse_click())
                 caja:submit()
-                assert(splash:wait(2))
+                assert(splash:wait(3))
                 splash:set_viewport_full()
                 return {
                 png=splash:png{},
@@ -44,10 +44,10 @@ class HomeSpider(scrapy.Spider):
     script2 = """
                 function main(splash)
                     assert(splash:go(splash.args.url))
-                    assert(splash:wait(1.5))
-                    element2= assert(splash:select('a[href*="www.ingrammicrocloud.es/2014/05/30/what-does-amazons-bitcoin-move-mean-for-b2b-cloud-sales"]'))
-                    assert(element2:mouse_click())
                     assert(splash:wait(2))
+                    element2= assert(splash:select('p > a[href*="www.ingrammicrocloud.es/2014/05/30/what-does-amazons-bitcoin-move-mean-for-b2b-cloud-sales"]'))
+                    assert(element2:mouse_click())
+                    assert(splash:wait(3))
                     splash:set_viewport_full()
                     return splash:png{}
                 end
@@ -59,8 +59,6 @@ class HomeSpider(scrapy.Spider):
             endpoint='execute',
             args={'lua_source': self.script},
         )
-
-
 
 
     def parse(self, response):
@@ -95,10 +93,10 @@ class HomeSpider(scrapy.Spider):
         )
 
     def parse3(self,response):
-        png_bytes2 = response.body
+        png_bytes3 = response.body
         url = response.url
         print "processing: " + url
         Image = "Post Screenshot.png"
         with open(Image, 'wb') as f:
-            f.write(png_bytes2)
+            f.write(png_bytes3)
         print Image + " has been saved"
