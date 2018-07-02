@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
-
+import ast
 import base64
 from scrapy_splash import SplashRequest
 
@@ -17,7 +17,10 @@ class HomeSpider(scrapy.Spider):
                 assert(splash:go(splash.args.url))
                 assert(splash:wait(1))
                 splash:set_viewport_full()
-                return splash:png{}
+                return{
+                png=splash:png(),
+                url=splash:url(),
+                }
             end
             """
     script1 = """
@@ -26,7 +29,7 @@ class HomeSpider(scrapy.Spider):
                 assert(splash:wait(0.5))
                 element=splash:select('a[href*="blog"]')
                 assert(element:mouse_click{})
-                assert(splash:wait(2))
+                assert(splash:wait(3))
                 caja=splash:select('#searchform')
                 caja:send_text('amazon')
                 assert(caja:mouse_click())
@@ -34,8 +37,8 @@ class HomeSpider(scrapy.Spider):
                 assert(splash:wait(3))
                 splash:set_viewport_full()
                 return {
-                png=splash:png{},
                 url=splash:url(),
+                png=splash:png(),
                 }
             end
     
@@ -44,12 +47,15 @@ class HomeSpider(scrapy.Spider):
     script2 = """
                 function main(splash)
                     assert(splash:go(splash.args.url))
-                    assert(splash:wait(2))
+                    assert(splash:wait(3))
                     element2= assert(splash:select('p > a[href*="www.ingrammicrocloud.es/2014/05/30/what-does-amazons-bitcoin-move-mean-for-b2b-cloud-sales"]'))
                     assert(element2:mouse_click())
                     assert(splash:wait(3))
                     splash:set_viewport_full()
-                    return splash:png{}
+                    return {
+                    png=splash:png(),
+                    url=splash:url(),
+                    }
                 end
            """
     def start_requests(self):
@@ -63,13 +69,17 @@ class HomeSpider(scrapy.Spider):
 
     def parse(self, response):
         # full decoded JSON data is available as response.data:
-        imgstring = response.body
-        url = response.url
-        print "processing: " + url
-        Image= "LandingPage Screenshot.png"
-        with open(Image, 'wb') as f:
-            f.write(imgstring)
+        body = ast.literal_eval(response.body)
+        imgstring = body['png']
+
+        Image = "LandingPage Screenshot.png"
+        fh= open(Image, "wb")
+        fh.write(imgstring.decode('base64'))
+        fh.close()
         print Image + " has been saved"
+        url = body['url']
+        print "processing: " + url
+
         yield SplashRequest(
             url=response.url,
             callback=self.parse2,
@@ -78,12 +88,14 @@ class HomeSpider(scrapy.Spider):
         )
 
     def parse2(self,response):
-        png_bytes2 = response.body
-        url = response.url
+        body = ast.literal_eval(response.body)
+        png_bytes2 = body['png']
+        url = body['url']
         print "processing: " + url
         Image = "Blog Screenshot.png"
-        with open(Image, 'wb') as f:
-            f.write(png_bytes2)
+        fh = open(Image, "wb")
+        fh.write(png_bytes2.decode('base64'))
+        fh.close()
         print Image + " has been saved"
         yield SplashRequest(
             url=response.url,
@@ -93,10 +105,12 @@ class HomeSpider(scrapy.Spider):
         )
 
     def parse3(self,response):
-        png_bytes3 = response.body
-        url = response.url
+        body = ast.literal_eval(response.body)
+        png_bytes3 = body['png']
+        url = body['url']
         print "processing: " + url
         Image = "Post Screenshot.png"
-        with open(Image, 'wb') as f:
-            f.write(png_bytes3)
+        fh = open(Image, "wb")
+        fh.write(png_bytes3.decode('base64'))
+        fh.close()
         print Image + " has been saved"
