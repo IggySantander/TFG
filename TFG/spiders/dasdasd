@@ -1,0 +1,8 @@
+element2=splash:select('body > div.page-section-continued > div > div > div.twelve.columns.alpha > div:nth-child(2) > div.post > p.read-more-link > a')
+element2=splash:select('a[href*="what-does-amazons-bitcoin-move-mean-for-b2b-cloud-sales"]')
+<a href="http://www.ingrammicrocloud.es/2014/05/30/what-does-amazons-bitcoin-move-mean-for-b2b-cloud-sales/">Read more...</a>
+
+
+element=splash:select('a[href*="blog"]')
+
+<a href="http://www.ingrammicrocloud.es/blog/" class="secondmenulink">Blog</a>
