@@ -7,9 +7,9 @@ from scrapy_splash import SplashRequest
 
 class HomeSpider(scrapy.Spider):
     name = 'TFG'
-    allowed_domains = ['ingrammicrocloud.es']
-    start_urls = 'http://www.ingrammicrocloud.es/'
-    blog_url = "http://www.ingrammicrocloud.es/?s=blog"
+    allowed_domains = ['ingrammicrocloud.com']
+    start_urls = 'http://www.ingrammicrocloud.com/'
+    blog_url = "https://www.ingrammicrocloud.com/blog/"
     script = """
             function pad(r, pad)
                 return {r[1]-pad, r[2]-pad, r[3]+pad, r[4]+pad}
@@ -117,7 +117,6 @@ class HomeSpider(scrapy.Spider):
         body = ast.literal_eval(response.body)
         imgstring = body['png']
         url = body['url']
-        print response.xpath.keys()
         print "processing: " + url
         Image = "LandingPage Screenshot.png"
         fh= open(Image, "wb")
