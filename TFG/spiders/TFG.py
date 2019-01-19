@@ -15,6 +15,7 @@ class HomeSpider(scrapy.Spider):
                 return {r[1]-pad, r[2]-pad, r[3]+pad, r[4]+pad}
             end
             function main(splash)
+                splash:set_viewport_size(1920, 1080)
                 assert(splash:go(splash.args.url))
                 assert(splash:wait(1))
                 splash:set_viewport_full()
@@ -26,17 +27,21 @@ class HomeSpider(scrapy.Spider):
             """
     script1 = """
             function main(splash)
-                assert(splash:go(splash.args.url))
-                assert(splash:wait(0.5))
-                element=splash:select('a[href*="blog"]')
-                assert(element:mouse_click{})
-                assert(splash:wait(3))
-                caja=splash:select('#searchform')
-                caja:send_text('amazon')
-                assert(caja:mouse_click())
-                caja:submit()
-                assert(splash:wait(4))
-                splash:set_viewport_full()
+                	splash:set_viewport_size(1920, 1080)
+	                assert(splash:go(splash.args.url))
+                    assert(splash:wait(0.5))
+                    menu=splash:select('#block-mainnavigation > div > ul > li:nth-of-type(4)')
+                    assert(menu:mouse_click{})
+                    element=splash:select('a[href*="blog"]')
+                    assert(element:mouse_click{})
+                    assert(splash:wait(3))
+                    splash:set_viewport_full()
+                    caja=splash:select('#searchform')
+                    caja:send_text('amazon')
+                    assert(caja:mouse_click())
+                    caja:submit()
+                    assert(splash:wait(4))
+                    splash:set_viewport_full()
                 return {
                 url=splash:url(),
                 png=splash:png(),
