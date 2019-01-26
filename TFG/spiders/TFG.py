@@ -10,6 +10,12 @@ class HomeSpider(scrapy.Spider):
     allowed_domains = ['ingrammicrocloud.com']
     start_urls = 'http://www.ingrammicrocloud.com/'
     blog_url = "https://www.ingrammicrocloud.com/blog/"
+
+    """
+        Primer Script: 
+        Renderizado de la pagina inicial y retorno de foto
+    """
+
     script = """
             function pad(r, pad)
                 return {r[1]-pad, r[2]-pad, r[3]+pad, r[4]+pad}
@@ -25,57 +31,81 @@ class HomeSpider(scrapy.Spider):
                 }
             end
             """
+    """
+        Segundo Script:
+        En la pagina inicial, interacciona con el menu, y va a la pagina del blog    
+    """
+
+
     script1 = """
             function main(splash)
                 	splash:set_viewport_size(1920, 1080)
 	                assert(splash:go(splash.args.url))
-                    assert(splash:wait(0.5))
+                    assert(splash:wait(5))
                     menu=splash:select('#block-mainnavigation > div > ul > li:nth-of-type(4)')
                     assert(menu:mouse_click{})
+                    assert(splash:wait(5))
                     element=splash:select('a[href*="blog"]')
                     assert(element:mouse_click{})
-                    assert(splash:wait(3))
+                    assert(splash:wait(5))
                     splash:set_viewport_full()
-                    caja=splash:select('#searchform')
-                    caja:send_text('amazon')
-                    assert(caja:mouse_click())
-                    caja:submit()
-                    assert(splash:wait(4))
                     splash:set_viewport_full()
                 return {
                 url=splash:url(),
                 png=splash:png(),
                 }
             end
-    
     """
+
+    """
+    Tercer Script:
+    En el blog, va clickando en el siguiente boton, hasta que el elemento al que queremos redirigirnos aparezca    
+    """
+
 
     script2 = """
                 function main(splash)
-                    assert(splash:go(splash.args.url))
-                    assert(splash:wait(3))
-                    element2= assert(splash:select('p > a[href*="www.ingrammicrocloud.es/2014/05/30/what-does-amazons-bitcoin-move-mean-for-b2b-cloud-sales"]'))
-                    assert(element2:mouse_click())
-                    assert(splash:wait(4))
-                    splash:set_viewport_full()
-                    return {
-                    png=splash:png(),
-                    url=splash:url(),
-                    }
+                                assert(splash:go(splash.args.url))
+                                assert(splash:wait(2))
+                                element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
+                                while (element == nil) do
+                                        print(splash:url())
+                                        nextbutton = splash:select('a[title*="Go to next page"]')
+                                        assert(nextbutton:mouse_click())
+                                        assert(splash:wait(2))
+                                        element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
+                                end
+                                assert(splash:wait(2))
+                                splash:set_viewport_full()
+                                return{
+                                png=splash:png(),
+                                url=splash:url(),
+                                }
                 end
            """
+
+    """
+    Cuarto Script:
+    Lo mismo que antes, solo que esta vez interactuamos con el elemento, y sacamos una foto de la pagina del blog    
+    """
+
+
     script3 = """
                 function main(splash)
                                 assert(splash:go(splash.args.url))
                                 assert(splash:wait(2))
-                                element= assert(splash:select('#menu-item-4674'))
-                                assert(element:mouse_hover{x=0,y=0})
-                                assert(splash:wait(4))
-                                element2 = assert(splash:select('#menu-item-5131'))
-                                assert(element2:mouse_click())
-                                assert(splash:wait(4))
+                                element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
+                                while (element == nil) do
+                                        print(splash:url())
+                                        nextbutton = splash:select('a[title*="Go to next page"]')
+                                        assert(nextbutton:mouse_click())
+                                        assert(splash:wait(2))
+                                        element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
+                                end
+                                assert(element:mouse_click{})
+                                assert(splash:wait(3))
                                 splash:set_viewport_full()
-                                return {
+                                return{
                                 png=splash:png(),
                                 url=splash:url(),
                                 }
@@ -123,7 +153,7 @@ class HomeSpider(scrapy.Spider):
         imgstring = body['png']
         url = body['url']
         print "processing: " + url
-        Image = "LandingPage Screenshot.png"
+        Image = "Image-1.png"
         fh= open(Image, "wb")
         fh.write(imgstring.decode('base64'))
         fh.close()
@@ -140,7 +170,7 @@ class HomeSpider(scrapy.Spider):
         png_bytes2 = body['png']
         url = body['url']
         print "processing: " + url
-        Image = "Blog Screenshot.png"
+        Image = "Image-2.png"
         fh = open(Image, "wb")
         fh.write(png_bytes2.decode('base64'))
         fh.close()
@@ -159,7 +189,7 @@ class HomeSpider(scrapy.Spider):
         png_bytes3 = body['png']
         url = body['url']
         print "processing: " + url
-        Image = "Post Screenshot.png"
+        Image = "Image-3.png"
         fh = open(Image, "wb")
         fh.write(png_bytes3.decode('base64'))
         fh.close()
@@ -178,13 +208,13 @@ class HomeSpider(scrapy.Spider):
         png_bytes3 = body['png']
         url = body['url']
         print "processing: " + url
-        Image = "Quienes somos.png"
+        Image = "Image-4.png"
         fh = open(Image, "wb")
         fh.write(png_bytes3.decode('base64'))
         fh.close()
         print Image + " has been saved"
         yield SplashRequest(
-            url=self.blog_url,
+            url=self.url,
             callback=self.parse5,
             endpoint='execute',
             args={'lua_source': self.script4,'timeout': 3600},
