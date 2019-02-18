@@ -25,7 +25,7 @@ class HomeSpider(scrapy.Spider):
             function main(splash)
                 splash:set_viewport_size(1920, 1080)
                 assert(splash:go(splash.args.url))
-                assert(splash:wait(1))
+                assert(splash:wait(.5))
                 splash:set_viewport_full()
                 return{
                 png=splash:png(),
@@ -43,13 +43,13 @@ class HomeSpider(scrapy.Spider):
             function main(splash)
                 	splash:set_viewport_size(1920, 1080)
 	                assert(splash:go(splash.args.url))
-                    assert(splash:wait(1))
+                    assert(splash:wait(.5))
                     menu=splash:select('#block-mainnavigation > div > ul > li:nth-of-type(4)')
                     assert(menu:mouse_click{})
-                    assert(splash:wait(1))
+                    assert(splash:wait(.5))
                     element=splash:select('a[href*="blog"]')
                     assert(element:mouse_click{})
-                    assert(splash:wait(1))
+                    assert(splash:wait(.5))
                     splash:set_viewport_full()
                     splash:set_viewport_full()
                 return {
@@ -68,16 +68,16 @@ class HomeSpider(scrapy.Spider):
     script2 = """
                 function main(splash)
                                 assert(splash:go(splash.args.url))
-                                assert(splash:wait(1))
+                                assert(splash:wait(.5))
                                 element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
                                 while (element == nil) do
                                         print(splash:url())
                                         nextbutton = splash:select('a[title*="Go to next page"]')
                                         assert(nextbutton:mouse_click())
-                                        assert(splash:wait(2))
+                                        assert(splash:wait(.5))
                                         element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
                                 end
-                                assert(splash:wait(1))
+                                assert(splash:wait(.5))
                                 splash:set_viewport_full()
                                 return{
                                 png=splash:png(),
@@ -95,17 +95,17 @@ class HomeSpider(scrapy.Spider):
     script3 = """
                 function main(splash)
                                 assert(splash:go(splash.args.url))
-                                assert(splash:wait(1))
+                                assert(splash:wait(.5))
                                 element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
                                 while (element == nil) do
                                         print(splash:url())
                                         nextbutton = splash:select('a[title*="Go to next page"]')
                                         assert(nextbutton:mouse_click())
-                                        assert(splash:wait(1))
+                                        assert(splash:wait(.5))
                                         element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
                                 end
                                 assert(element:mouse_click{})
-                                assert(splash:wait(1))
+                                assert(splash:wait(.5))
                                 splash:set_viewport_full()
                                 return{
                                 png=splash:png(),
@@ -171,7 +171,7 @@ class HomeSpider(scrapy.Spider):
         fh.write(png_bytes3.decode('base64'))
         fh.close()
         print Image + " has been saved"
-        print response.css("a[href*=blog]::attr(href)").getall()
+        """print response.css("a[href*=blog]::attr(href)").getall()"""
         yield SplashRequest(
             url=response.url,
             callback=self.parse4,
