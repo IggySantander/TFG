@@ -19,25 +19,20 @@ class HomeSpider(scrapy.Spider):
     """
 
     script = """
-             function pad(r, pad)
-                    return {r[1]-pad, r[2]-pad, r[3]+pad, r[4]+pad}
-                end   
+            function pad(r, pad)
+                return {r[1]-pad, r[2]-pad, r[3]+pad, r[4]+pad}
+            end
             function main(splash)
                 splash:set_viewport_size(1920, 1080)
                 assert(splash:go(splash.args.url))
-                assert(splash:wait(1))
+                assert(splash:wait(.5))
                 splash:set_viewport_full()
-                element= splash:select('#block-mainnavigation > div > ul > li:nth-of-type(4)')
-                assert(element:mouse_click{})
-                assert(splash:wait(1))
                 return{
                 png=splash:png(),
                 url=splash:url(),
                 }
             end
             """
-
-
     """
         Segundo Script:
         En la pagina inicial, interacciona con el menu, y va a la pagina del blog    
@@ -45,30 +40,21 @@ class HomeSpider(scrapy.Spider):
 
 
     script1 = """
-           function main(splash)
-                splash:set_viewport_size(1920, 1080)
-                assert(splash:go(splash.args.url))
-                splash:set_viewport_full()
-                assert(splash:wait(1))
-                element= splash:select('#block-mainnavigation > div > ul > li:nth-of-type(4)')
-                assert(element:mouse_click{})
-                assert(splash:wait(1))
-                element= splash:select('#header-Blog')
-                assert(element:mouse_click{})
-                assert(splash:wait(1))
-                element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
-                                while (element == nil) do
-                                        print(splash:url())
-                                        nextbutton = splash:select('a[rel="next"]')
-                                        assert(nextbutton:mouse_click())
-                                        assert(splash:wait(.5))
-                                        element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
-                                end
-                assert(splash:wait(1))
-                splash:set_viewport_full()
-                return{
-                png=splash:png(),
+            function main(splash)
+                	splash:set_viewport_size(1920, 1080)
+	                assert(splash:go(splash.args.url))
+                    assert(splash:wait(.5))
+                    menu=splash:select('#block-mainnavigation > div > ul > li:nth-of-type(4)')
+                    assert(menu:mouse_click{})
+                    assert(splash:wait(.5))
+                    element=splash:select('a[href*="blog"]')
+                    assert(element:mouse_click{})
+                    assert(splash:wait(.5))
+                    splash:set_viewport_full()
+                    splash:set_viewport_full()
+                return {
                 url=splash:url(),
+                png=splash:png(),
                 }
             end
     """
@@ -83,14 +69,16 @@ class HomeSpider(scrapy.Spider):
                 function main(splash)
                                 assert(splash:go(splash.args.url))
                                 assert(splash:wait(.5))
-                                element=splash:select('.logo')
-                                assert(element:mouse_click{})
-                                assert(splash:wait(1))
-                                element= splash:select('.selected-country')
-                                assert(element:mouse_click{})
-                                assert(splash:wait(1))
-                                element=splash:select_all('a[href*="www.ingrammicrocloud"]')
-                                for i,v in ipairs(element) do print(i,v) end
+                                element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
+                                while (element == nil) do
+                                        print(splash:url())
+                                        nextbutton = splash:select('a[title*="Go to next page"]')
+                                        assert(nextbutton:mouse_click())
+                                        assert(splash:wait(.5))
+                                        element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
+                                end
+                                assert(splash:wait(.5))
+                                splash:set_viewport_full()
                                 return{
                                 png=splash:png(),
                                 url=splash:url(),
