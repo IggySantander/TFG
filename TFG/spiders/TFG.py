@@ -13,10 +13,7 @@ class HomeSpider(scrapy.Spider):
     start_urls = 'http://www.ingrammicrocloud.com/'
     blog_url = "https://www.ingrammicrocloud.com/blog/"
 
-    """
-        Primer Script: 
-        Renderizado de la pagina inicial y retorno de foto
-    """
+        #Primer Script: Renderizado de la pagina inicial y retorno de foto
 
     script = """
              function pad(r, pad)
@@ -38,10 +35,7 @@ class HomeSpider(scrapy.Spider):
             """
 
 
-    """
-        Segundo Script:
-        En la pagina inicial, interacciona con el menu, y va a la pagina del blog    
-    """
+       # Segundo Script: En la pagina inicial, interacciona con el menu, y va a la pagina del blog
 
 
     script1 = """
@@ -61,7 +55,7 @@ class HomeSpider(scrapy.Spider):
                                         print(splash:url())
                                         nextbutton = splash:select('a[rel="next"]')
                                         assert(nextbutton:mouse_click())
-                                        assert(splash:wait(.5))
+                                        assert(splash:wait(1))
                                         element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
                                 end
                 assert(splash:wait(1))
@@ -73,51 +67,54 @@ class HomeSpider(scrapy.Spider):
             end
     """
 
-    """
-    Tercer Script:
-    En el blog, va clickando en el siguiente boton, hasta que el elemento al que queremos redirigirnos aparezca    
-    """
+    #Tercer Script: Selecciona para elegir la lista de paises y nos printea el numero de paises dispoinles
 
 
     script2 = """
+                treat = require("treat")
                 function main(splash)
+                                splash:set_viewport_size(1920, 1080)
                                 assert(splash:go(splash.args.url))
-                                assert(splash:wait(.5))
+                                assert(splash:wait(1))
                                 element=splash:select('.logo')
                                 assert(element:mouse_click{})
                                 assert(splash:wait(1))
                                 element= splash:select('.selected-country')
                                 assert(element:mouse_click{})
-                                assert(splash:wait(1))
-                                element=splash:select_all('a[href*="www.ingrammicrocloud"]')
-                                for i,v in ipairs(element) do print(i,v) end
+                                assert(splash:wait(3))
+                                elements=splash:select_all('a[href*="www.ingrammicrocloud"]')
+                                splash:set_viewport_full()
                                 return{
+                                elements=treat.as_array(elements),
                                 png=splash:png(),
                                 url=splash:url(),
                                 }
                 end
            """
 
-    """
-    Cuarto Script:
-    Lo mismo que antes, solo que esta vez interactuamos con el elemento, y sacamos una foto de la pagina del blog    
-    """
+    #Cuarto Script: Lo mismo que antes, solo que esta vez interactuamos con el elemento, y sacamos una foto de la pagina del blog
 
 
     script3 = """
                 function main(splash)
+               
+  								splash:set_viewport_size(1920, 1080)
                                 assert(splash:go(splash.args.url))
-                                assert(splash:wait(.5))
-                                element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
-                                while (element == nil) do
-                                        print(splash:url())
-                                        nextbutton = splash:select('a[title*="Go to next page"]')
-                                        assert(nextbutton:mouse_click())
-                                        assert(splash:wait(.5))
-                                        element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
-                                end
+                                assert(splash:wait(1))
+                                element= splash:select('a[href*=".com/es/es"]')
                                 assert(element:mouse_click{})
-                                assert(splash:wait(.5))
+                                assert(splash:wait(2))
+                                element= splash:select('a[href*="/es/es/partner-stories/"]')
+                                assert(element:mouse_click{})
+                                assert(splash:wait(2))
+                                for var=2,5 do
+                                    element= splash:select('body > div.dialog-off-canvas-main-canvas > div.wrapper.background-light > div > div:nth-child(2) > div > ul > li:nth-child('..var ..')')
+                                    assert(element:mouse_click{})
+                                    assert(splash:wait(2))
+                                    element= splash:select('body > div.dialog-off-canvas-main-canvas > div.wrapper.background-light > div > div:nth-child(2) > div > ul > li:nth-child('..var ..')')
+                                    texto= element:text()
+                                    print(texto)
+                                end
                                 splash:set_viewport_full()
                                 return{
                                 png=splash:png(),
@@ -126,6 +123,30 @@ class HomeSpider(scrapy.Spider):
                 end
     """
 
+    # Quinto Script: Selecciona el menu de contacto, e introduce el email de test
+    script4 ="""
+                function main(splash)
+                        splash:set_viewport_size(1920, 1080)
+                        assert(splash:go(splash.args.url))
+                        assert(splash:wait(1))
+                        element= splash:select('#block-mainnavigation > div > ul > li:nth-of-type(4)')
+                        assert(element:mouse_click{})
+                        assert(splash:wait(1))
+                        element= splash:select('a[href*="contact"')
+                        assert(element:mouse_click{})
+                        assert(splash:wait(1))
+                        element= splash:select('[name*="email"')
+                        element:send_text("test.1@hotmail.com")
+                        assert(splash:wait(1))
+                        element= splash:select('[type*="submit"]')
+                        assert(element:mouse_click{})
+                        assert(splash:wait(1))
+                        return{
+                                png=splash:png(),
+                                url=splash:url(),
+                        }   
+                end
+    """
     #Initial request
     def start_requests(self):
         yield SplashRequest(
@@ -183,6 +204,8 @@ class HomeSpider(scrapy.Spider):
         fh.write(png_bytes3.decode('base64'))
         fh.close()
         print Image + " has been saved"
+        elements = body['elements']
+        print elements
         """print response.css("a[href*=blog]::attr(href)").getall()"""
         yield SplashRequest(
             url=response.url,
@@ -204,6 +227,20 @@ class HomeSpider(scrapy.Spider):
         fh.write(png_bytes3.decode('base64'))
         fh.close()
         print Image + " has been saved"
+        yield SplashRequest(
+            url=HomeSpider.url,
+            callback=self.parse5,
+            endpoint='execute',
+            args={'lua_source': self.script4},
+        )
 
-
-
+    def parse5(self,response):
+        body = ast.literal_eval(response.body)
+        png_bytes3 = body['png']
+        url = body['url']
+        print "processing: " + url
+        Image = "Image-5.png"
+        fh = open(Image, "wb")
+        fh.write(png_bytes3.decode('base64'))
+        fh.close()
+        print Image + " has been saved"
