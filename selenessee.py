@@ -66,23 +66,31 @@ def main():
     menu.click()
     time.sleep(1)
 
-    # We click next untill no more articles are found
-    CSS_SELECTOR_ALL_ARTICLES = "a[href*='blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live']"
-    while(len(driver.find_elements_by_css_selector(CSS_SELECTOR_ALL_ARTICLES))== 0):
+    # We click "Load More" untill we find the target article
+    # ----------------------------------------------------
+    CSS_SELECTOR_TARGET_ARTICLE = "a[href*='blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live']"
+    criteria_for_element_found = len(driver.find_elements_by_css_selector(CSS_SELECTOR_TARGET_ARTICLE))
+
+    while(criteria_for_element_found == 0):
         NEXT_CSS_SELECTOR = 'a[rel="next"]'
         time.sleep(1)
         element1 =  WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR,NEXT_CSS_SELECTOR)))
         logger.info("Element1: tag: %s text %s href %s" % (element1.tag_name, element1.text, element1.get_attribute("href")))
         element1.click()
-    logger.debug("Finishing clicking in element 1")
+        criteria_for_element_found = len(driver.find_elements_by_css_selector(CSS_SELECTOR_TARGET_ARTICLE))
 
-    
-    element2= driver.find_element_by_css_selector(CSS_SELECTOR_ALL_ARTICLES)
-    logger.debug("Clicking on element2")
+    logger.debug("Found target CSS selector: Criteria: {}".format(criteria_for_element_found))
+
+    go_to_the_top(driver)
+    element2 = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, CSS_SELECTOR_TARGET_ARTICLE)))
+#    element2= driver.find_element_by_css_selector(CSS_SELECTOR_TARGET_ARTICLE)
+    logger.debug("Clicking on target element")
     element2.click()
     logger.info("Blog selected and displayed!")
     time.sleep(2)
-    
+
+    # Back to the blog
+    logger.info("Going back to the blog")
     element=WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR,'.logo')))
     element.click()
     menu=WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR,'#block-mainnavigation > div > ul > li:nth-child(4)')))
@@ -90,9 +98,13 @@ def main():
     menu=WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR,'a[href*="blog"')))
     menu.click()
     time.sleep(1)
+
+    # Search for blog entries with data March 2019
+    # --------------------------------------------
     print ("Finding March 2019 Blogs...")
     while(len(driver.find_elements_by_css_selector('a[rel="next"]'))!=0):
         element1 = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'a[rel="next"]')))
+        logger.info("Element1: tag: %s text %s href %s" % (element1.tag_name, element1.text, element1.get_attribute("href")))
         element1.click()
         time.sleep(1)
     entries=driver.find_elements_by_css_selector(".blog-box")
@@ -161,6 +173,12 @@ def main():
 
     driver.quit()
 
+def go_to_the_top(webdriver) :
+
+    webdriver.execute_script("window.scrollTo(0,0);")
+
+def go_to_the_botton(webdriver) :
+    webdriver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
 def setup_logging() :
 
