@@ -1,0 +1,53 @@
+A Python virtualenv is recommended (both in Linux and Windows) to have a valid python environment independent from the system python environment.
+
+This virtualenv must contain the modules listed in the requirements.txt file.
+
+PROCEDURE TO CREATE A VIRTUALENV (for Debian GNU/Linux):
+
+1. Have the package python-virtualenv (or python3-virtualenv) installed in your system.
+
+2. Select a directory OUTSIDE YOUR PROYECT PATH (e.g. "../venv" in parallel with the Git image).
+
+3. Launch
+
+   virtualenv <VIRTUALENV_PATH>
+
+4. "Activate" your virtualenv on your shell
+
+   . <VIRTUALENV_PATH>/bin/activate
+
+   a (<VIRTUALENV_PATH>) should be added to your prompt.
+
+5. Upgrade pip and setuptools within the virtualenv
+
+   pip install --upgrade pip
+   pip install --upgrade setuptools
+
+6. Install the required modules
+
+   pip install -r <REQUIREMENTS.TXT file>
+
+You can deactivate it by launching:
+
+   deactivate
+
+PROCEDURE TO USE A VIRTUALENV
+
+The virtualenv must be activated BEFORE launching any python script.
+
+For command-line sessions this can be done in the shell that you are using to launch the program.
+
+   . <VIRTUALENV_PATH>/bin/activate
+
+If the script needs to be launched externally (e.g. from a web server) a wrapper script can be created with the content.
+
+#!/bin/sh
+
+. <VIRTUALENV_PATH>/bin/activate
+
+python <PYTHON_FILE.py> "$@"
+
+
+
+
+
