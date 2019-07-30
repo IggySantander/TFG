@@ -15,27 +15,27 @@ def main():
 
     logger = setup_logging()
     
-    # We open the main window
+    # Task 00: We open the main window
     #
     # For Firefox geckodriver must be running
     # For Chrome: chromedriver must be running
     # ---------------------------------------
-    logger.info("Launching the browser...")
+    logger.info("Task 00: Launching the browser...")
     driver = webdriver.Firefox()
     driver.maximize_window()
     driver.get('https://www.ingrammicrocloud.com/')
     logger.info("page title: %s\n\n" % driver.title)
 
-    # Accepting cookies and saving main page
+    # Task 01: Accepting cookies and saving main page
     # --------------------------------------
+    logger.info("Task 01: Accepting the cookies and privacy policy...")
     COOKIES_CSS_SELECTOR = ".agree-button.btn.btn-secondary.btn-sm.custom_agree"
-    logger.info("Accepting the cookies and privacy policy...")
     prvcy = driver.find_element_by_css_selector(COOKIES_CSS_SELECTOR)
     prvcy.click()
     driver.save_screenshot("Pagina-principal.png")
 
-    # Going through the menu to capture the elements
-    # ----------------------------------------------
+    # Task 02: Getting all elements of menu
+    # -------------------------------------
     XPATH_MAIN_MENU_ELEMENT_TO_CLICK = '#block-mainnavigation > div > ul > li:nth-child(%s)'  # %s is the number from 1 to 5
     FIELDS_CSS_SELECTOR = '.link-box.link-box-small'
     logger.info("Elements of main menu")
@@ -57,17 +57,19 @@ def main():
 
     logger.info("Main menu information: %s\n\n" % json.dumps(menu_element_list, indent=4))
 
-    # We enter the blog
-    # -----------------
+    # Task 03: We enter the blog
+    # --------------------------
     logger.info("Going to blog page...")
-    CSS_SELECTOR_BLOG = 'a[href*="blog"'
+    BLOG_CSS_SELECTOR = 'a[href*="blog"'
     time.sleep(1)
-    menu=driver.find_element_by_css_selector(CSS_SELECTOR_BLOG)
+    menu=driver.find_element_by_css_selector(BLOG_CSS_SELECTOR)
     menu.click()
     time.sleep(1)
 
+    # Task 04: Enter in a specific article
+    # ------------------------------------
+
     # We click "Load More" untill we find the target article
-    # ----------------------------------------------------
     CSS_SELECTOR_TARGET_ARTICLE = "a[href*='blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live']"
     criteria_for_element_found = len(driver.find_elements_by_css_selector(CSS_SELECTOR_TARGET_ARTICLE))
 
@@ -83,76 +85,106 @@ def main():
 
     go_to_the_top(driver)
     element2 = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, CSS_SELECTOR_TARGET_ARTICLE)))
-#    element2= driver.find_element_by_css_selector(CSS_SELECTOR_TARGET_ARTICLE)
     logger.debug("Clicking on target element")
     element2.click()
     logger.info("Blog selected and displayed!")
     time.sleep(2)
 
-    # Back to the blog
+    # Task 05:  Navigate back to the blog
+    # -----------------------------------
+    LOGO_CSS_SELECTOR = ".logo"
     logger.info("Going back to the blog")
-    element=WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR,'.logo')))
+    element=WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, LOGO_CSS_SELECTOR)))
     element.click()
-    menu=WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR,'#block-mainnavigation > div > ul > li:nth-child(4)')))
+    MAIN_MENU_COMPANY_CSS_SELECTOR = '#block-mainnavigation > div > ul > li:nth-child(4)'
+    menu=WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, MAIN_MENU_COMPANY_CSS_SELECTOR)))
     menu.click()
-    menu=WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR,'a[href*="blog"')))
+    menu=WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, BLOG_CSS_SELECTOR)))
     menu.click()
     time.sleep(1)
 
-    # Search for blog entries with data March 2019
+    # Task 06: Finding blog entries with data March 2019
     # --------------------------------------------
-    print ("Finding March 2019 Blogs...")
-    while(len(driver.find_elements_by_css_selector('a[rel="next"]'))!=0):
-        element1 = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'a[rel="next"]')))
-        logger.info("Element1: tag: %s text %s href %s" % (element1.tag_name, element1.text, element1.get_attribute("href")))
+    logger.info("Finding March 2019 Blogs...")
+
+    # We need to accumulate ALL the entries.  We click next until there is no more next button
+    criteria_for_load_more = len(driver.find_elements_by_css_selector(NEXT_CSS_SELECTOR))!=0
+    while criteria_for_load_more :
+        element1 = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, NEXT_CSS_SELECTOR)))
+        logger.debug("Element1: tag: %s text %s href %s" % (element1.tag_name, element1.text, element1.get_attribute("href")))
         element1.click()
         time.sleep(1)
-    entries=driver.find_elements_by_css_selector(".blog-box")
-    print ("March 2019 Blogs:")
-    for entrie in entries:
-        element=entrie.find_element_by_css_selector("a >  div:nth-child(2) > div:nth-child(3) > span:nth-child(1) > time:nth-child(1)")
+        criteria_for_load_more = len(driver.find_elements_by_css_selector(NEXT_CSS_SELECTOR))!=0
+
+    # Now we select all entries
+    BLOG_ENTRY_CSS_SELECTOR = ".blog-box"
+    BLOG_ENTRY_TIME_CSS_SELECTOR = "a >  div:nth-child(2) > div:nth-child(3) > span:nth-child(1) > time:nth-child(1)"
+    entries = driver.find_elements_by_css_selector(BLOG_ENTRY_CSS_SELECTOR)
+    blog_entries_march_2019 = []
+    for entry in entries:
+        element = entry.find_element_by_css_selector(BLOG_ENTRY_TIME_CSS_SELECTOR)
         if "March" in element.text:
             if "2019" in element.text:
-                print element.text
-                print entrie.get_attribute('href')
+                blog_entries_march_2019.append( OrderedDict([("title", element.text), ("url", entry.get_attribute("href") )]) )
 
+    logger.info("March 2019 Blog entries:\n{}".format(json.dumps(blog_entries_march_2019, indent=4)))
+    
+    # Go back to top and origin
     driver.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.HOME)
-
     element=WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR,'.logo')))
     time.sleep(1)
     element.click()
-    print ("Requesting info...")
-    menu=driver.find_element_by_css_selector("#block-mainnavigation > div > ul > li:nth-of-type(4)")
+
+    # Task 07: Fill in contact form
+    # -----------------------------
+    logger.info("Requesting info...")
+
+    menu=driver.find_element_by_css_selector(MAIN_MENU_COMPANY_CSS_SELECTOR)
     menu.click()
     time.sleep(1)
-    menu=driver.find_element_by_css_selector('a[href*="contact"')
+    CONTACT_CSS_SELECTOR = 'a[href*="contact"'
+    menu=driver.find_element_by_css_selector(CONTACT_CSS_SELECTOR)
     menu.click()
     time.sleep(2)
-    boton=driver.find_element_by_css_selector('[name*="email"')
+    EMAIL_ELEMENT_CSS_SELECTOR = '[name*="email"'
+    boton=driver.find_element_by_css_selector(EMAIL_ELEMENT_CSS_SELECTOR)
     boton.send_keys("test.1@hotmail.com")
     time.sleep(2)
-    boton=driver.find_element_by_css_selector('[type*="submit"]')
+    SUBMIT_BUTTON_CSS_SELECTOR = '[type*="submit"]'
+    boton=driver.find_element_by_css_selector(SUBMIT_BUTTON_CSS_SELECTOR)
     boton.click()
     time.sleep(2)
 
-    element=driver.find_element_by_css_selector('.logo')
+    logger.info("Request info sent")
+    
+    # Back to main page
+    element=driver.find_element_by_css_selector(LOGO_CSS_SELECTOR)
     element.click()
     time.sleep(2)
 
-    lang=driver.find_element_by_css_selector('.selected-country')
+    # Task 08: Find all countries and selecting Spain
+    # -----------------------------------------------
+    COUNTRY_ELEMENT_CSS_SELECTOR = '.selected-country'
+    
+    lang=driver.find_element_by_css_selector(COUNTRY_ELEMENT_CSS_SELECTOR)
     lang.click()
     time.sleep(2)
-    print ("Countries available:")
     time.sleep(1)
-    langs=driver.find_elements_by_css_selector('a[href*="www.ingrammicrocloud"]')
+    LANGS_CSS_SELECTOR = 'a[href*="www.ingrammicrocloud"]'
+    langs=driver.find_elements_by_css_selector(LANGS_CSS_SELECTOR)
+    countries = []
     for lang in langs:
-        print lang.text
-        print lang.get_attribute('href')
-    lang=driver.find_element_by_css_selector('a[href*=".com/es"]')
+        countries.append(OrderedDict([("country", lang.text), ("url", lang.get_attribute("href"))]))
+
+    logger.info("Country info:\n{}".format(json.dumps(countries, indent=4)))
+
+    SPAIN_COUNTRY_CSS_SELECTOR = 'a[href*=".com/es"]'
+    lang=driver.find_element_by_css_selector(SPAIN_COUNTRY_CSS_SELECTOR)
     lang.click()
     time.sleep(3)
-
-    #Caso 1 , recogemos todos los href y titulos de los desplegables
+    
+    # Task 09: We select all articles in category partner stories
+    # -----------------------------------------------------------
     element=driver.find_element_by_css_selector('a[href*="partner-stories"]')
     element.click()
     time.sleep(2)
