@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# coding: utf8
 import sys
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -121,7 +124,7 @@ def main():
     element=WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR,'.logo')))
     time.sleep(1)
     element.click()
-    print ("Requesting info...")
+    logger.info("Requesting info...")
     menu=driver.find_element_by_css_selector("#block-mainnavigation > div > ul > li:nth-of-type(4)")
     menu.click()
     time.sleep(1)
@@ -134,19 +137,19 @@ def main():
     boton=driver.find_element_by_css_selector('[type*="submit"]')
     boton.click()
     time.sleep(2)
-
+    logger.info("Information requested")
     element=driver.find_element_by_css_selector('.logo')
     element.click()
     time.sleep(2)
-
+    logger.info("Displaying countries available")
     lang=driver.find_element_by_css_selector('.selected-country')
     lang.click()
     time.sleep(2)
-    print ("Countries available:")
+    logger.info("Countries available:")
     time.sleep(1)
     langs=driver.find_elements_by_css_selector('a[href*="www.ingrammicrocloud"]')
     for lang in langs:
-        print lang.text
+        #print lang.text
         print lang.get_attribute('href')
     lang=driver.find_element_by_css_selector('a[href*=".com/es"]')
     lang.click()
@@ -156,7 +159,7 @@ def main():
     element=driver.find_element_by_css_selector('a[href*="partner-stories"]')
     element.click()
     time.sleep(2)
-    print ("Partners of Ingram Micro:")
+    logger.info("Partners of Ingram Micro:")
     time.sleep(1)
     for i in range(2,5):
         menu= driver.find_element_by_css_selector('body > div.dialog-off-canvas-main-canvas > div.wrapper.background-light > div > div:nth-child(2) > div > ul > li:nth-child(%s)' %i)
@@ -169,7 +172,7 @@ def main():
             if campo.text != "":
                 print campo.text
                 print campo.get_attribute('href')
-
+    logger.info("Shutting down....")
 
     driver.quit()
 

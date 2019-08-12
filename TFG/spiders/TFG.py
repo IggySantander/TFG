@@ -71,7 +71,6 @@ class HomeSpider(scrapy.Spider):
 
 
     script2 = """
-                treat = require("treat")
                 function main(splash)
                                 splash:set_viewport_size(1920, 1080)
                                 assert(splash:go(splash.args.url))
@@ -85,7 +84,7 @@ class HomeSpider(scrapy.Spider):
                                 elements=splash:select_all('a[href*="www.ingrammicrocloud"]')
                                 splash:set_viewport_full()
                                 return{
-                                elements=treat.as_array(elements),
+                                elements=elements,
                                 png=splash:png(),
                                 url=splash:url(),
                                 }
