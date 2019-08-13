@@ -13,7 +13,7 @@ class HomeSpider(scrapy.Spider):
     start_urls = 'http://www.ingrammicrocloud.com/'
     blog_url = "https://www.ingrammicrocloud.com/blog/"
 
-        #Primer Script: Renderizado de la pagina inicial y retorno de foto
+    # Primer Script: Renderizado de la pagina inicial y retorno de foto
 
     script = """
              function pad(r, pad)
@@ -34,9 +34,7 @@ class HomeSpider(scrapy.Spider):
             end
             """
 
-
-       # Segundo Script: En la pagina inicial, interacciona con el menu, y va a la pagina del blog
-
+    # Segundo Script: En la pagina inicial, interacciona con el menu, y va a la pagina del blog
 
     script1 = """
            function main(splash)
@@ -67,10 +65,10 @@ class HomeSpider(scrapy.Spider):
             end
     """
 
-    #Tercer Script: Selecciona para elegir la lista de paises y nos printea el numero de paises dispoinles
-
+    # Tercer Script: Selecciona para elegir la lista de paises y nos printea el numero de paises dispoinles
 
     script2 = """
+                treat = require('treat')
                 function main(splash)
                                 splash:set_viewport_size(1920, 1080)
                                 assert(splash:go(splash.args.url))
@@ -84,35 +82,45 @@ class HomeSpider(scrapy.Spider):
                                 elements=splash:select_all('a[href*="www.ingrammicrocloud"]')
                                 splash:set_viewport_full()
                                 return{
-                                elements=elements,
+                                elements=treat.as_array(elements),
                                 png=splash:png(),
                                 url=splash:url(),
                                 }
                 end
            """
 
-    #Cuarto Script: Lo mismo que antes, solo que esta vez interactuamos con el elemento, y sacamos una foto de la pagina del blog
-
+    # Cuarto Script: Lo mismo que antes, solo que esta vez interactuamos con el elemento, y sacamos una foto de la pagina del blog
 
     script3 = """
                 function main(splash)
-               
+
   								splash:set_viewport_size(1920, 1080)
                                 assert(splash:go(splash.args.url))
                                 assert(splash:wait(1))
                                 element= splash:select('a[href*=".com/es/es"]')
                                 assert(element:mouse_click{})
-                                assert(splash:wait(2))
+                                assert(splash:wait(1))
                                 element= splash:select('a[href*="/es/es/partner-stories/"]')
                                 assert(element:mouse_click{})
-                                assert(splash:wait(2))
+                                assert(splash:wait(1))
                                 for var=2,5 do
                                     element= splash:select('body > div.dialog-off-canvas-main-canvas > div.wrapper.background-light > div > div:nth-child(2) > div > ul > li:nth-child('..var ..')')
                                     assert(element:mouse_click{})
-                                    assert(splash:wait(2))
+                                    assert(splash:wait(1))
                                     element= splash:select('body > div.dialog-off-canvas-main-canvas > div.wrapper.background-light > div > div:nth-child(2) > div > ul > li:nth-child('..var ..')')
-                                    texto= element:text()
-                                    print(texto)
+                                    if (element ~= nil) then
+                                        texto= element:text()
+                                        print(texto)
+                                    end
+                                    campos = splash:select_all('.partner-box')
+                                    for key,value in pairs(campos) do
+                                        elemento = key,value
+                                        if (elemento:text ~= "") then
+                                        print(elemento:text)
+                                        print(elemento:getAttribute('href'))
+                                        end
+                                    end
+
                                 end
                                 splash:set_viewport_full()
                                 return{
@@ -123,7 +131,7 @@ class HomeSpider(scrapy.Spider):
     """
 
     # Quinto Script: Selecciona el menu de contacto, e introduce el email de test
-    script4 ="""
+    script4 = """
                 function main(splash)
                         splash:set_viewport_size(1920, 1080)
                         assert(splash:go(splash.args.url))
@@ -146,7 +154,8 @@ class HomeSpider(scrapy.Spider):
                         }   
                 end
     """
-    #Initial request
+
+    # Initial request
     def start_requests(self):
         yield SplashRequest(
             url=HomeSpider.start_urls,
@@ -155,7 +164,8 @@ class HomeSpider(scrapy.Spider):
             args={'lua_source': self.script},
         )
 
-        #First parse that saves the Landing Page image and then calls the next script
+        # First parse that saves the Landing Page image and then calls the next script
+
     def parse(self, response):
         # full decoded JSON data is available as response.data:
         body = ast.literal_eval(response.body)
@@ -163,7 +173,7 @@ class HomeSpider(scrapy.Spider):
         url = body['url']
         print "processing: " + url
         Image = "Image-1.png"
-        fh= open(Image, "wb")
+        fh = open(Image, "wb")
         fh.write(imgstring.decode('base64'))
         fh.close()
         print Image + " has been saved"
@@ -173,8 +183,9 @@ class HomeSpider(scrapy.Spider):
             endpoint='execute',
             args={'lua_source': self.script1},
         )
-        #Escenario of imput text in a search box and then saving the results
-    def parse2(self,response):
+        # Escenario of imput text in a search box and then saving the results
+
+    def parse2(self, response):
         body = ast.literal_eval(response.body)
         png_bytes2 = body['png']
         url = body['url']
@@ -190,10 +201,10 @@ class HomeSpider(scrapy.Spider):
             endpoint='execute',
             args={'lua_source': self.script2}
         )
-        #Screenshot of the blog
-        #Should be added a method to scrape the number of words
+        # Screenshot of the blog
+        # Should be added a method to scrape the number of words
 
-    def parse3(self,response):
+    def parse3(self, response):
         body = ast.literal_eval(response.body)
         png_bytes3 = body['png']
         url = body['url']
@@ -213,10 +224,9 @@ class HomeSpider(scrapy.Spider):
             args={'lua_source': self.script3},
         )
 
+        # Scenario of combobox, same as cmp
 
-        #Scenario of combobox, same as cmp
-
-    def parse4(self,response):
+    def parse4(self, response):
         body = ast.literal_eval(response.body)
         png_bytes3 = body['png']
         url = body['url']
@@ -233,7 +243,7 @@ class HomeSpider(scrapy.Spider):
             args={'lua_source': self.script4},
         )
 
-    def parse5(self,response):
+    def parse5(self, response):
         body = ast.literal_eval(response.body)
         png_bytes3 = body['png']
         url = body['url']
