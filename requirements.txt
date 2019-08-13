@@ -1,1 +1,4 @@
 selenium
+scrapy
+scrapy_splash
+
