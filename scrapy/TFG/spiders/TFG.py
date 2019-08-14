@@ -120,7 +120,7 @@ class HomeSpider(scrapy.Spider):
                                         print(elemento:getAttribute('href'))
                                         end
                                     end
-
+                                    
                                 end
                                 splash:set_viewport_full()
                                 return{

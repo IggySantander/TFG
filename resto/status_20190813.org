@@ -1,0 +1,32 @@
+#+TITLE: Status proyecto
+
+* Implementaciones
+
+** Splash
+
+*** TODO Find way to return array from lua code in splash
+
+In script2
+
+    elements=splash:select_all('a[href*="www.ingrammicrocloud"]')
+
+elements is supposed to be an array but 
+
+INTERPRETATION:  It seems the problem is not the array but the type of the elements of the array.
+For some reason they cannot be automatically passed to JSON.
+
+In here: https://github.com/scrapinghub/splash/issues/557
+
+the solution is to explicitely get node.OuterHTML() as decided in https://github.com/scrapinghub/splash/issues/564
+
+Just a supposition
+
+*** TODO Add in the code instructions to run the scrapy
+
+Don't rely on the TFG document, the code should be autonomous for this.
+
+*** TODO Use gitignore for .pyc and geckodriver.log.  Remove them from git first
+
+
+
+
