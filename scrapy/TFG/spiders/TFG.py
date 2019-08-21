@@ -24,6 +24,30 @@ class HomeSpider(scrapy.Spider):
                 assert(splash:go(splash.args.url))
                 assert(splash:wait(1))
                 splash:set_viewport_full()
+                -- Task 01: Accepting cookies and saving main page
+                
+                element=splash:select('.agree-button.btn.btn-secondary.btn-sm.custom_agree')
+                assert(element:mouse_click{})
+                assert(splash:wait(1))
+                
+                --Task 02: Getting all elements of menu
+                
+                for var=1,5 do
+                    menu=splash:select('#block-mainnavigation > div > ul > li:nth-of-type('..var ..')')
+                    assert(menu:mouse_click{})
+                    assert(splash:wait(1))
+                    fields = splash:select_all('.link-box.link-box-small')
+                    for key,value in pairs(fields) do
+                                        if (value:text() ~= "") then
+                                            print(value.node:text())
+                                            print(value.node:getAttribute('href'))
+                                        end
+                    end
+                
+                end
+                
+                -- Task 03: We enter the blog
+                
                 element= splash:select('#block-mainnavigation > div > ul > li:nth-of-type(4)')
                 assert(element:mouse_click{})
                 assert(splash:wait(1))
@@ -48,6 +72,8 @@ class HomeSpider(scrapy.Spider):
                 element= splash:select('#header-Blog')
                 assert(element:mouse_click{})
                 assert(splash:wait(1))
+                -- Task 04: Enter in a specific article
+                
                 element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
                                 while (element == nil) do
                                         print(splash:url())
@@ -73,16 +99,23 @@ class HomeSpider(scrapy.Spider):
                                 splash:set_viewport_size(1920, 1080)
                                 assert(splash:go(splash.args.url))
                                 assert(splash:wait(1))
+                                -- Task 05:  Navigate back to the blog
                                 element=splash:select('.logo')
                                 assert(element:mouse_click{})
                                 assert(splash:wait(1))
+                                -- Task 08: Find all countries and selecting Spain
                                 element= splash:select('.selected-country')
                                 assert(element:mouse_click{})
                                 assert(splash:wait(3))
                                 elements=splash:select_all('a[href*="www.ingrammicrocloud"]')
+                                for key,value in pairs(elements) do
+                                        if (value:text() ~= "") then
+                                            print(value.node:text())
+                                            print(value.node:getAttribute('href'))
+                                        end
+                    end
                                 splash:set_viewport_full()
                                 return{
-                                elements=treat.as_array(elements),
                                 png=splash:png(),
                                 url=splash:url(),
                                 }
@@ -100,6 +133,8 @@ class HomeSpider(scrapy.Spider):
                                 element= splash:select('a[href*=".com/es/es"]')
                                 assert(element:mouse_click{})
                                 assert(splash:wait(1))
+                                -- Task 09: We select all articles in category partner stories
+                                
                                 element= splash:select('a[href*="/es/es/partner-stories/"]')
                                 assert(element:mouse_click{})
                                 assert(splash:wait(1))
@@ -115,9 +150,9 @@ class HomeSpider(scrapy.Spider):
                                     campos = splash:select_all('.partner-box')
                                     for key,value in pairs(campos) do
                                         elemento = key,value
-                                        if (elemento:text ~= "") then
-                                        print(elemento:text)
-                                        print(elemento:getAttribute('href'))
+                                        if (value:text() ~= "") then
+                                        print(value:text())
+                                        print(value:getAttribute('href'))
                                         end
                                     end
                                     
@@ -136,6 +171,8 @@ class HomeSpider(scrapy.Spider):
                         splash:set_viewport_size(1920, 1080)
                         assert(splash:go(splash.args.url))
                         assert(splash:wait(1))
+                        -- Task 07: Fill in contact form
+                        
                         element= splash:select('#block-mainnavigation > div > ul > li:nth-of-type(4)')
                         assert(element:mouse_click{})
                         assert(splash:wait(1))
