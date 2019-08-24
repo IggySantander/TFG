@@ -30,8 +30,10 @@ def main():
 
     # Task 01: Accepting cookies and saving main page
     # --------------------------------------
-    COOKIES_CSS_SELECTOR = ".agree-button.btn.btn-secondary.btn-sm.custom_agree"
-    task_01_accepting_cookies(driver, COOKIES_CSS_SELECTOR)
+    COOKIES_CSS_SELECTOR = "#adroll_consent_accept"
+    COOKIES_CSS_SELECTOR_2 = ".agree-button.btn.btn-secondary.btn-sm.custom_agree"
+    task_01_accepting_cookies(driver, COOKIES_CSS_SELECTOR, COOKIES_CSS_SELECTOR_2)
+
 
     # Task 02: Getting all elements of menu
     # -------------------------------------
@@ -114,13 +116,16 @@ def task_00_open_the_main_window():
 
     return driver
 
-def task_01_accepting_cookies(driver, COOKIES_CSS_SELECTOR) :
+def task_01_accepting_cookies(driver, COOKIES_CSS_SELECTOR,  COOKIES_CSS_SELECTOR_2) :
 
     # Task 01: Accepting cookies and saving main page
     # --------------------------------------
     glb.logger.info("Task 01: Accepting the cookies and privacy policy...")
 
     prvcy = driver.find_element_by_css_selector(COOKIES_CSS_SELECTOR)
+    prvcy.click()
+    time.sleep(2)
+    prvcy = driver.find_element_by_css_selector(COOKIES_CSS_SELECTOR_2)
     prvcy.click()
     driver.save_screenshot("Pagina-principal.png")
 
