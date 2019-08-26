@@ -28,7 +28,7 @@ class HomeSpider(scrapy.Spider):
                 
                 element=splash:select('.agree-button.btn.btn-secondary.btn-sm.custom_agree')
                 assert(element:mouse_click{})
-                assert(splash:wait(1))
+                assert(splash:wait(.5))
                 
                 --Task 02: Getting all elements of menu
                 local menu = {}
@@ -79,10 +79,10 @@ class HomeSpider(scrapy.Spider):
                 assert(splash:wait(1))
                 element= splash:select('#block-mainnavigation > div > ul > li:nth-of-type(4)')
                 assert(element:mouse_click{})
-                assert(splash:wait(1))
+                assert(splash:wait(.5))
                 element= splash:select('#header-Blog')
                 assert(element:mouse_click{})
-                assert(splash:wait(1))
+                assert(splash:wait(.5))
                 -- Task 04: Enter in a specific article
                 
                 element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
@@ -90,7 +90,7 @@ class HomeSpider(scrapy.Spider):
                                         print(splash:url())
                                         nextbutton = splash:select('a[rel="next"]')
                                         assert(nextbutton:mouse_click())
-                                        assert(splash:wait(1.5))
+                                        assert(splash:wait(.5))
                                         element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
                                 end
                 assert(splash:wait(1))
@@ -111,22 +111,22 @@ class HomeSpider(scrapy.Spider):
                                 -- Task 05:  Navigate back to the blog
                                 element=splash:select('.logo')
                                 assert(element:mouse_click{})
-                                assert(splash:wait(1))
+                                assert(splash:wait(.5))
                                 
                                 -- Task 06 : Finding blog entries with date march 2019
                                 
                                 element= splash:select('#block-mainnavigation > div > ul > li:nth-of-type(4)')
                                 assert(element:mouse_click{})
-                                assert(splash:wait(1))
+                                assert(splash:wait(.5))
                                 element= splash:select('#header-Blog')
                                 assert(element:mouse_click{})
-                                assert(splash:wait(1))
+                                assert(splash:wait(.5))
                                 nextbutton = splash:select('a[rel="next"]')
                                 while (nextbutton ~= nil) do
                                         print(splash:url())
                                         nextbutton = splash:select('a[rel="next"]')
                                         assert(nextbutton:mouse_click())
-                                        assert(splash:wait(1))
+                                        assert(splash:wait(.5))
                                         nextbutton = splash:select('a[rel="next"]')
                                 end
                                 local blogs = {}
@@ -157,10 +157,10 @@ class HomeSpider(scrapy.Spider):
                                 -- Task 08: Find all countries and selecting Spain
                                 
                                 assert(splash:go('https://www.ingrammicrocloud.com/us/en/'))
-                                assert(splash:wait(1))
+                                assert(splash:wait(.5))
                                 element= splash:select('.selected-country')
                                 assert(element:mouse_click{})
-                                assert(splash:wait(1.5))
+                                assert(splash:wait(1))
                                 local hrefs = {}
                                 local text = {}
                                 elements=splash:select_all('a[href*="www.ingrammicrocloud"]')
