@@ -10,8 +10,8 @@ from scrapy.linkextractors import LinkExtractor
 class HomeSpider(scrapy.Spider):
     name = 'TFG'
     allowed_domains = ['ingrammicrocloud.com']
-    start_urls = 'http://www.ingrammicrocloud.com/'
-    blog_url = "https://www.ingrammicrocloud.com/blog/"
+    start_urls = 'https://www.ingrammicrocloud.com/us/en/'
+    blog_url = "https://www.ingrammicrocloud.com/us/en/blog/"
 
   # Initial script from first request
 
@@ -104,7 +104,6 @@ class HomeSpider(scrapy.Spider):
 
 
     script2 = """
-                treat = require('treat')
                 function main(splash)
                                 splash:set_viewport_size(1920, 1080)
                                 assert(splash:go(splash.args.url))
@@ -127,7 +126,7 @@ class HomeSpider(scrapy.Spider):
                                         print(splash:url())
                                         nextbutton = splash:select('a[rel="next"]')
                                         assert(nextbutton:mouse_click())
-                                        assert(splash:wait(2))
+                                        assert(splash:wait(1))
                                         nextbutton = splash:select('a[rel="next"]')
                                 end
                                 local blogs = {}
@@ -154,8 +153,8 @@ class HomeSpider(scrapy.Spider):
                                 
                                 for i, elem in ipairs(elements) do
                                     if (elem:text() ~= "") then
-                                        text[i]= elem.node:text()
-                                        hrefs[i] = elem.node:getAttribute('href')
+                                        table.insert(text,elem.node:text())
+                                        table.insert(hrefs,elem.node:getAttribute('href'))
                                     end
                                 end
 
@@ -282,13 +281,13 @@ class HomeSpider(scrapy.Spider):
 
         print "Menu Principal:"
         for elem in menu:
-            print menu_text[elem]
-            print menu[elem]
+            print elem + ":" + menu_text[elem]
+            print elem + ":" + menu[elem]
 
         print "Menus secundarios:"
         for elem in submenu:
-            print submenu_text[elem]
-            print submenu[elem]
+            print elem + ":" + submenu_text[elem]
+            print elem + ":" + submenu[elem]
 
         url = body['url']
         print "processing: " + url
@@ -319,7 +318,7 @@ class HomeSpider(scrapy.Spider):
             url=response.url,
             callback=self.parse3,
             endpoint='execute',
-            args={'lua_source': self.script2}
+            args={'timeout': 90,'lua_source': self.script2,'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'}
         )
 
 
@@ -341,8 +340,8 @@ class HomeSpider(scrapy.Spider):
         print "Countries available:"
 
         for elem in text:
-            print  text[elem]
-            print  hrefs[elem]
+            print  elem + ":" + text[elem]
+            print  elem + ":" + hrefs[elem]
 
 
 
@@ -375,7 +374,7 @@ class HomeSpider(scrapy.Spider):
             print menu_text[elem]
             print menu[elem]
 
-        print "Menu¡s secundarios:"
+        print "Menus secundarios:"
         for elem in submenu:
             print submenu_text[elem]
             print submenu[elem]
