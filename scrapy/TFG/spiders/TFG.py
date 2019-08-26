@@ -139,11 +139,25 @@ class HomeSpider(scrapy.Spider):
                                 times= splash:select_all('a >  div:nth-child(2) > div:nth-child(3) > span:nth-child(1) > time:nth-child(1)')
                                 
                                 timestamp = {}
+                                blogs1={}
+                                timestamp1={}
                                 for i, elem in ipairs(times) do
                                     table.insert(timestamp,elem.node:text())
                                 end
+                                for i, elem in ipairs(timestamp) do
+                                    if string.find(elem,"March") then
+                                        if string.find(elem,"2019") then
+                                            table.insert(timestamp1,elem)
+                                            table.insert(blogs1,blogs[i])
+            							end
+          							end
+        						end
+                                        
                                 
                                 -- Task 08: Find all countries and selecting Spain
+                                
+                                assert(splash:go('https://www.ingrammicrocloud.com/us/en/'))
+                                assert(splash:wait(1))
                                 element= splash:select('.selected-country')
                                 assert(element:mouse_click{})
                                 assert(splash:wait(1.5))
@@ -162,8 +176,8 @@ class HomeSpider(scrapy.Spider):
                                 return{
                                 hrefs=hrefs,
                                 text=text,
-                                timestamp= timestamp,
-                                blogs=blogs,
+                                timestamp1= timestamp1,
+                                blogs1=blogs1,
                                 png=splash:png(),
                                 url=splash:url(),
                                 }
@@ -171,12 +185,11 @@ class HomeSpider(scrapy.Spider):
            """
 
 
-    script3 = """
-               function main(splash)
+    script3 = """      function main(splash)
   								splash:set_viewport_size(1920, 1080)
                                 assert(splash:go(splash.args.url))
-                                assert(splash:wait(1))
-                                element= splash:select('a[href*=".com/es/es"]')
+                                assert(splash:wait(2))
+                                element= splash:select('a[href*="es/es"]')
                                 assert(element:mouse_click{})
                                 assert(splash:wait(1))
                                 -- Task 09: We select all articles in category partner stories
@@ -318,7 +331,7 @@ class HomeSpider(scrapy.Spider):
             url=response.url,
             callback=self.parse3,
             endpoint='execute',
-            args={'timeout': 90,'lua_source': self.script2,'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'}
+            args={'timeout': 3600,'lua_source': self.script2,'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'}
         )
 
 
@@ -328,20 +341,20 @@ class HomeSpider(scrapy.Spider):
         url = body['url']
         hrefs = body['hrefs']
         text = body['text']
-        timestamp= body['timestamp']
-        blogs=body['blogs']
+        timestamp1= body['timestamp1']
+        blogs1=body['blogs1']
         print "March 2019 blogs:"
-        for entrie in timestamp:
-            if "March" in timestamp[entrie]:
-                if "2019" in timestamp[entrie]:
-                    print blogs[entrie]
-                    print timestamp[entrie]
+
+        for elem in timestamp1:
+            print  elem + ":" + timestamp1[elem]
+            print  elem + ":" + blogs1[elem]
 
         print "Countries available:"
 
         for elem in text:
             print  elem + ":" + text[elem]
             print  elem + ":" + hrefs[elem]
+
 
 
 
@@ -352,7 +365,7 @@ class HomeSpider(scrapy.Spider):
         fh.close()
         print Image + " has been saved"
         yield SplashRequest(
-            url=response.url,
+            url=url,
             callback=self.parse4,
             endpoint='execute',
             args={'lua_source': self.script3},
