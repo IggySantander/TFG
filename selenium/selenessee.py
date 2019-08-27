@@ -81,22 +81,12 @@ def main():
 
     # Task 09: We select all articles in category partner stories
     # -----------------------------------------------------------
-    element=driver.find_element_by_css_selector('a[href*="partner-stories"]')
-    element.click()
-    time.sleep(2)
-    glb.logger.info("Partners of Ingram Micro:")
-    time.sleep(1)
-    for i in range(2,5):
-        menu= driver.find_element_by_css_selector('body > div.dialog-off-canvas-main-canvas > div.wrapper.background-light > div > div:nth-child(2) > div > ul > li:nth-child(%s)' %i)
-        menu.click()
-        time.sleep(2)
-        element = driver.find_element_by_css_selector("body > div.dialog-off-canvas-main-canvas > div.wrapper.background-light > div > div:nth-child(2) > div > ul > li:nth-child(%s) > a" %i)
-        print element.text
-        campos = driver.find_elements_by_css_selector('.partner-box')
-        for campo in campos:
-            if campo.text != "":
-                print campo.text
-                print campo.get_attribute('href')
+    PARTNER_STORIES_CSS_SELECTOR = 'a[href*="partner-stories"]'
+    MAIN_MENU_2_TO_5_CSS_SELECTOR = 'body > div.dialog-off-canvas-main-canvas > div.wrapper.background-light > div > div:nth-child(2) > div > ul > li:nth-child(%s)'
+    PARTNER_BOX_CSS_SELECTOR = '.partner-box'
+    task_09_we_select_all_articles_in_category_partner_stories(driver, PARTNER_STORIES_CSS_SELECTOR, MAIN_MENU_2_TO_5_CSS_SELECTOR, PARTNER_BOX_CSS_SELECTOR )
+
+
     glb.logger.info("Shutting down....")
 
     driver.quit()
@@ -276,8 +266,27 @@ def task_08_find_all_countries_and_select_spain(driver, COUNTRY_ELEMENT_CSS_SELE
     lang=driver.find_element_by_css_selector(SPAIN_COUNTRY_CSS_SELECTOR)
     lang.click()
     time.sleep(3)
-    
 
+    
+def task_09_we_select_all_articles_in_category_partner_stories(driver, PARTNER_STORIES_CSS_SELECTOR, MAIN_MENU_2_TO_5_CSS_SELECTOR, PARTNER_BOX_CSS_SELECTOR ) :
+
+    element=driver.find_element_by_css_selector(PARTNER_STORIES_CSS_SELECTOR)
+    element.click()
+    time.sleep(2)
+    glb.logger.info("Partners of Ingram Micro:")
+    time.sleep(1)
+    for i in range(2,5):
+        menu= driver.find_element_by_css_selector(MAIN_MENU_2_TO_5_CSS_SELECTOR %i)
+        menu.click()
+        time.sleep(2)
+        element = driver.find_element_by_css_selector(MAIN_MENU_2_TO_5_CSS_SELECTOR + " > a" %i)
+        print element.text
+        campos = driver.find_elements_by_css_selector(PARTNER_BOX_CSS_SELECTOR)
+        for campo in campos:
+            if campo.text != "":
+                print campo.text
+                print campo.get_attribute('href')
+    
 
     
     
