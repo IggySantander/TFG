@@ -79,10 +79,10 @@ class HomeSpider(scrapy.Spider):
                 assert(splash:wait(1))
                 element= splash:select('#block-mainnavigation > div > ul > li:nth-of-type(4)')
                 assert(element:mouse_click{})
-                assert(splash:wait(.5))
+                assert(splash:wait(1))
                 element= splash:select('#header-Blog')
                 assert(element:mouse_click{})
-                assert(splash:wait(.5))
+                assert(splash:wait(1))
                 -- Task 04: Enter in a specific article
                 
                 element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
@@ -90,7 +90,7 @@ class HomeSpider(scrapy.Spider):
                                         print(splash:url())
                                         nextbutton = splash:select('a[rel="next"]')
                                         assert(nextbutton:mouse_click())
-                                        assert(splash:wait(.5))
+                                        assert(splash:wait(1))
                                         element= splash:select('a[href*="/blogs/newly-relaunched-ingram-micro-cloud-website-and-blog-are-live/"]')
                                 end
                 assert(splash:wait(1))
@@ -111,22 +111,22 @@ class HomeSpider(scrapy.Spider):
                                 -- Task 05:  Navigate back to the blog
                                 element=splash:select('.logo')
                                 assert(element:mouse_click{})
-                                assert(splash:wait(.5))
+                                assert(splash:wait(1.5))
                                 
                                 -- Task 06 : Finding blog entries with date march 2019
                                 
                                 element= splash:select('#block-mainnavigation > div > ul > li:nth-of-type(4)')
                                 assert(element:mouse_click{})
-                                assert(splash:wait(.5))
+                                assert(splash:wait(1.5))
                                 element= splash:select('#header-Blog')
                                 assert(element:mouse_click{})
-                                assert(splash:wait(.5))
+                                assert(splash:wait(1))
                                 nextbutton = splash:select('a[rel="next"]')
                                 while (nextbutton ~= nil) do
                                         print(splash:url())
                                         nextbutton = splash:select('a[rel="next"]')
                                         assert(nextbutton:mouse_click())
-                                        assert(splash:wait(.5))
+                                        assert(splash:wait(1))
                                         nextbutton = splash:select('a[rel="next"]')
                                 end
                                 local blogs = {}
@@ -157,7 +157,7 @@ class HomeSpider(scrapy.Spider):
                                 -- Task 08: Find all countries and selecting Spain
                                 
                                 assert(splash:go('https://www.ingrammicrocloud.com/us/en/'))
-                                assert(splash:wait(.5))
+                                assert(splash:wait(1))
                                 element= splash:select('.selected-country')
                                 assert(element:mouse_click{})
                                 assert(splash:wait(1))
@@ -188,7 +188,7 @@ class HomeSpider(scrapy.Spider):
     script3 = """      function main(splash)
   								splash:set_viewport_size(1920, 1080)
                                 assert(splash:go(splash.args.url))
-                                assert(splash:wait(2))
+                                assert(splash:wait(1))
                                 element= splash:select('a[href*="es/es"]')
                                 assert(element:mouse_click{})
                                 assert(splash:wait(1))

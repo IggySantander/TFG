@@ -82,7 +82,7 @@ def main():
     # Task 09: We select all articles in category partner stories
     # -----------------------------------------------------------
     PARTNER_STORIES_CSS_SELECTOR = 'a[href*="partner-stories"]'
-    MAIN_MENU_2_TO_5_CSS_SELECTOR = 'body > div.dialog-off-canvas-main-canvas > div.wrapper.background-light > div > div:nth-child(2) > div > ul > li:nth-child(%s)'
+    MAIN_MENU_2_TO_5_CSS_SELECTOR = 'body > div.dialog-off-canvas-main-canvas > div.wrapper.background-light > div > div:nth-child(2) > div > ul > li:nth-child(%s) > a'
     PARTNER_BOX_CSS_SELECTOR = '.partner-box'
     task_09_we_select_all_articles_in_category_partner_stories(driver, PARTNER_STORIES_CSS_SELECTOR, MAIN_MENU_2_TO_5_CSS_SELECTOR, PARTNER_BOX_CSS_SELECTOR )
 
@@ -279,15 +279,17 @@ def task_09_we_select_all_articles_in_category_partner_stories(driver, PARTNER_S
         menu= driver.find_element_by_css_selector(MAIN_MENU_2_TO_5_CSS_SELECTOR %i)
         menu.click()
         time.sleep(2)
-        element = driver.find_element_by_css_selector(MAIN_MENU_2_TO_5_CSS_SELECTOR + " > a" %i)
+        element = driver.find_element_by_css_selector(MAIN_MENU_2_TO_5_CSS_SELECTOR %i)
         print element.text
         campos = driver.find_elements_by_css_selector(PARTNER_BOX_CSS_SELECTOR)
+        Partners = []
         for campo in campos:
             if campo.text != "":
-                print campo.text
-                print campo.get_attribute('href')
-    
+                Partners.append(OrderedDict([("Partner", campo.text), ("url", campo.get_attribute('href'))]))
+                #print campo.text
+                #print campo.get_attribute('href')
 
+        glb.logger.info("Parnters info:\n{}".format(json.dumps(Partners, indent=4)))
     
     
 def go_to_the_top(webdriver) :
